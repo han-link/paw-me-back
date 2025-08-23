@@ -1,0 +1,143 @@
+definitions:
+  Group:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      owner:
+        $ref: '#/definitions/UserBrief'
+      updated_at:
+        type: string
+    type: object
+  GroupListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/Group'
+        type: array
+      error:
+        type: string
+      success:
+        type: boolean
+    type: object
+  GroupWithMembers:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/UserBrief'
+        type: array
+      name:
+        type: string
+      owner:
+        $ref: '#/definitions/UserBrief'
+      updated_at:
+        type: string
+    type: object
+  UserBrief:
+    properties:
+      id:
+        type: string
+      username:
+        type: string
+    type: object
+  types.AddMembersPayload:
+    properties:
+      user_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - user_ids
+    type: object
+info:
+  contact: {}
+  title: PawMeBack API
+paths:
+  /groups:
+    get:
+      description: Retrieve all groups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GroupListResponse'
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Retrieve groups
+      tags:
+      - groups
+  /groups/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a group
+      parameters:
+      - description: Group ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GroupWithMembers'
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Retrieve group
+      tags:
+      - groups
+  /groups/{id}/members:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Group ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Add members
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/types.AddMembersPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GroupWithMembers'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Update a group and modify its members
+      tags:
+      - groups
+swagger: "2.0"
