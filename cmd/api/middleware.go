@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"paw-me-back/internal/model"
 	"paw-me-back/internal/store"
 	"strings"
 
@@ -75,8 +76,26 @@ func (app *application) groupsContextMiddleware(next http.Handler) http.Handler 
 	})
 }
 
-func (app *application) CheckGroupMembership(next http.Handler) http.Handler {
+func (app *application) checkGroupMembership(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := getUserFromContext(r)
+		group := getGroupFromContext(r)
+		allowed := checkMembership(user.ID, group.Members)
 
+		if !allowed {
+			app.forbiddenResponse(w, r)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
+}
+
+func checkMembership(userId uuid.UUID, groupMembers []model.User) bool {
+	for _, member := range groupMembers {
+		if member.ID == userId {
+			return true
+		}
+	}
+	return false
 }

@@ -62,6 +62,7 @@ func (app *application) mount() http.Handler {
 
 			r.Route("/{groupId}", func(r chi.Router) {
 				r.Use(app.groupsContextMiddleware)
+				r.Use(app.checkGroupMembership)
 				r.Get("/", app.getGroupHandler)
 				r.Put("/members", app.addMembersToGroupHandler)
 			})
