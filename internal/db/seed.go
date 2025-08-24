@@ -1,12 +1,11 @@
 package db
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"math/rand"
 	"paw-me-back/internal/model"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -21,27 +20,11 @@ var usernamesRepo = []string{
 }
 
 func Seed(db *gorm.DB) {
-	ctx := context.Background()
 	users := generateUsers(100)
-
-	for _, user := range users {
-		err := gorm.G[model.User](db).Create(ctx, &user)
-		if err != nil {
-			log.Println("Error creating user: ", user, err)
-			return
-		}
-	}
+	db.CreateInBatches(&users, len(users))
 
 	groups := generateGroups(50, 10, users)
-
-	for _, group := range groups {
-		err := gorm.G[model.Group](db).Create(ctx, group)
-		if err != nil {
-			log.Println("Error creating group: ", group, err)
-			return
-		}
-	}
-
+	db.CreateInBatches(&groups, len(groups))
 }
 
 func generateUsers(count int) []model.User {
@@ -49,8 +32,9 @@ func generateUsers(count int) []model.User {
 
 	for i := 0; i < count; i++ {
 		users[i] = model.User{
-			Username: usernamesRepo[i%len(usernamesRepo)] + fmt.Sprintf("%d", i),
-			Email:    usernamesRepo[i%len(usernamesRepo)] + fmt.Sprintf("%d", i) + "@gmail.com",
+			Username:     usernamesRepo[i%len(usernamesRepo)] + fmt.Sprintf("%d", i),
+			Email:        usernamesRepo[i%len(usernamesRepo)] + fmt.Sprintf("%d", i) + "@gmail.com",
+			SuperTokenID: uuid.New(),
 		}
 	}
 
