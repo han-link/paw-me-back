@@ -73,10 +73,26 @@ func (s *GroupStore) AddMembers(ctx context.Context, group *model.Group, userIDs
 		return err
 	}
 
+	if len(users) == 0 {
+		return ErrNotFound
+	}
+
 	err := s.db.WithContext(ctx).
 		Model(&group).
 		Association("Members").
 		Append(&users)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	var freshMembers []model.User
+
+	err = s.db.WithContext(ctx).
+		Model(&group).
+		Association("Members").
+		Find(&freshMembers)
+
+	group.Members = freshMembers
+	return nil
 }

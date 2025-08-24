@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"paw-me-back/internal/model"
 	"paw-me-back/internal/serializer"
+	"paw-me-back/internal/store"
 	"paw-me-back/internal/types"
 )
 
@@ -93,7 +95,13 @@ func (app *application) addMembersToGroupHandler(w http.ResponseWriter, r *http.
 	ctx := r.Context()
 
 	if err := app.store.Groups.AddMembers(ctx, group, payload.UserIDs); err != nil {
-		app.internalServerError(w, r, err)
+		switch {
+		case errors.Is(err, store.ErrNotFound):
+			app.notFoundResponse(w, r, err)
+		default:
+			app.internalServerError(w, r, err)
+		}
+		return
 	}
 
 	res := mapper.SanitizeSingleGroup(group)

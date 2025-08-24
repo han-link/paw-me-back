@@ -93,7 +93,7 @@ func main() {
 
 	logger.Info("Sugared logger constructed successfully")
 
-	database, err := db.New()
+	database, err := db.New(false)
 	if err != nil {
 		logger.Fatal(err)
 	}

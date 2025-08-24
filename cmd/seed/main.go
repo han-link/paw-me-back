@@ -12,7 +12,7 @@ func main() {
 	if err != nil {
 		log.Print("Couldn't load .env file")
 	}
-	conn, err := db.New()
+	conn, err := db.New(true)
 	if err != nil {
 		log.Fatal(err)
 	}

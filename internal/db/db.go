@@ -7,9 +7,10 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-func New() (*gorm.DB, error) {
+func New(debug bool) (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		`host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s`,
 		env.GetString("POSTGRES_HOST", "localhost"),
@@ -21,7 +22,15 @@ func New() (*gorm.DB, error) {
 		env.GetString("TIMEZONE", "Europe/Berlin"),
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	logLevel := logger.Error
+
+	if debug {
+		logLevel = logger.Info
+	}
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logLevel),
+	})
 
 	if err != nil {
 		return nil, err
@@ -29,11 +38,19 @@ func New() (*gorm.DB, error) {
 
 	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
 
+	if err = db.SetupJoinTable(&model.Group{}, "Members", &model.UserGroup{}); err != nil {
+		return nil, err
+	}
+	if err = db.SetupJoinTable(&model.User{}, "Groups", &model.UserGroup{}); err != nil {
+		return nil, err
+	}
+
 	err = db.AutoMigrate(
 		&model.User{},
 		&model.Group{},
 		&model.Expense{},
 		&model.Payee{},
+		&model.UserGroup{},
 	)
 
 	if err != nil {
