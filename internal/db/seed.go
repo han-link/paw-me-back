@@ -34,7 +34,7 @@ func generateUsers(count int) []model.User {
 		users[i] = model.User{
 			Username:     usernamesRepo[i%len(usernamesRepo)] + fmt.Sprintf("%d", i),
 			Email:        usernamesRepo[i%len(usernamesRepo)] + fmt.Sprintf("%d", i) + "@gmail.com",
-			SuperTokenID: uuid.New(),
+			SuperTokenID: uuid.New().String(),
 		}
 	}
 

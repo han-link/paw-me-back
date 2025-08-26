@@ -1,13 +1,12 @@
 package model
 
-import "github.com/google/uuid"
-
 type User struct {
 	BaseModel
-	SuperTokenID uuid.UUID `gorm:"type:uuid;uniqueIndex"`
+	SuperTokenID string `gorm:"uniqueIndex;"`
 	Username     string
 	Email        string
-	Groups       []Group   `gorm:"many2many:user_groups;joinForeignKey:UserID;joinReferences:GroupID"`
-	Expenses     []Expense `json:"expenses,omitempty" gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;"`
-	Payees       []Payee   `json:"payees,omitempty" gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;"`
+
+	Groups   []Group   `gorm:"many2many:user_groups;"`
+	Expenses []Expense `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;"`
+	Payees   []Payee   `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;"`
 }

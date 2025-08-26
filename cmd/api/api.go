@@ -22,11 +22,10 @@ type application struct {
 }
 
 type config struct {
-	addr              string
-	apiURL            string
-	frontendURL       string
-	env               string
-	superTokensConfig supertokens.TypeInput
+	addr        string
+	apiURL      string
+	frontendURL string
+	env         string
 }
 
 func (app *application) mount() http.Handler {

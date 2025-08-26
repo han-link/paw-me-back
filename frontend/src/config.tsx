@@ -1,8 +1,7 @@
-
 "use client";
 
 import EmailPassword from "supertokens-auth-react/recipe/emailpassword";
-import { EmailPasswordPreBuiltUI } from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
+import {EmailPasswordPreBuiltUI} from "supertokens-auth-react/recipe/emailpassword/prebuiltui";
 import Session from "supertokens-auth-react/recipe/session";
 
 
@@ -18,7 +17,7 @@ export function getWebsiteDomain() {
     return websiteUrl;
 }
 
-
+const reUsername = /^[a-z0-9_-]{3,32}$/;
 
 export const SuperTokensConfig = {
     appInfo: {
@@ -30,7 +29,22 @@ export const SuperTokensConfig = {
     },
     
     recipeList: [
-        EmailPassword.init(),
+        EmailPassword.init({
+            signInAndUpFeature: {
+                signUpForm: {
+                    formFields: [
+                        {
+                            id: "username",
+                            label: "Username",
+                            placeholder: "john.doe",
+                            validate: async (input) => {
+                                return reUsername.test(input) ? undefined : "3–32 chars, lowercase letters, numbers, _ or -"
+                            },
+                        },
+                    ]
+                }
+            }
+        }),
         Session.init()
     ],
     getRedirectionURL: async (context: any) => {

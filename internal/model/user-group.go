@@ -12,8 +12,9 @@ type UserGroup struct {
 	GroupID   uuid.UUID `gorm:"type:uuid;primaryKey"`
 	CreatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	User  User  `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE;"`
+	Group Group `gorm:"foreignKey:GroupID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE;"`
 }
 
-func (UserGroup) TableName() string {
-	return "user_groups"
-}
+func (UserGroup) TableName() string { return "user_groups" }

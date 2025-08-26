@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"paw-me-back/internal/model"
 	"paw-me-back/internal/store"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -23,24 +22,27 @@ func (app *application) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		superTokenId := sessionContainer.GetUserID()
+
+		ctx := r.Context()
+
+		user, err := app.store.Users.GetBySuperTokenID(ctx, superTokenId)
+		if err != nil {
+			app.unauthorizedErrorResponse(w, r, err)
+			return
+		}
+
 		userInfo, err := emailpassword.GetUserByID(sessionContainer.GetUserID())
 
 		if err != nil {
 			app.internalServerError(w, r, err)
 		}
 
-		superTokenId, err := uuid.Parse(sessionContainer.GetUserID())
-
-		if err != nil {
-			app.internalServerError(w, r, err)
-		}
-
-		ctx := r.Context()
-
-		user, err := app.store.Users.GetOrCreateBySuperTokenID(ctx, superTokenId, strings.Split(userInfo.Email, "@")[0], userInfo.Email)
-		if err != nil {
-			app.unauthorizedErrorResponse(w, r, err)
-			return
+		if userInfo.Email != user.Email {
+			user.Email = userInfo.Email
+			if err = app.store.Users.Update(ctx, user); err != nil {
+				app.internalServerError(w, r, err)
+			}
 		}
 
 		ctx = context.WithValue(ctx, userCtx, user)
