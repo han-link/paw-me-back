@@ -6,7 +6,7 @@ type Group struct {
 	BaseModel
 	Name     string
 	OwnerID  uuid.UUID
-	Owner    User      `gorm:"foreignKey:OwnerID;references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE;"`
-	Members  []User    `gorm:"many2many:user_groups;"`
+	Owner    *User     `gorm:"foreignKey:OwnerID;references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE;"`
+	Members  []*User   `gorm:"many2many:user_groups;"`
 	Expenses []Expense `gorm:"foreignKey:GroupID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE;"`
 }

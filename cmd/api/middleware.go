@@ -93,7 +93,7 @@ func (app *application) checkGroupMembership(next http.Handler) http.Handler {
 	})
 }
 
-func checkMembership(userId uuid.UUID, groupMembers []model.User) bool {
+func checkMembership(userId uuid.UUID, groupMembers []*model.User) bool {
 	for _, member := range groupMembers {
 		if member.ID == userId {
 			return true

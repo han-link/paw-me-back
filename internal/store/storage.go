@@ -20,6 +20,7 @@ type Groups interface {
 	GetByID(ctx context.Context, groupID uuid.UUID) (*model.Group, error)
 	AddMembers(ctx context.Context, group *model.Group, userIDs []uuid.UUID) error
 	IsMember(ctx context.Context, userId uuid.UUID, groupId uuid.UUID) (bool, error)
+	Create(ctx context.Context, group *model.Group) error
 }
 
 type Users interface {

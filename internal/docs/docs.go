@@ -41,6 +41,45 @@ const docTemplate = `{
                         "schema": {}
                     }
                 }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "groups"
+                ],
+                "summary": "Create a new group",
+                "parameters": [
+                    {
+                        "description": "Create group",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/CreateGroupPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/GroupWithMembers"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    }
+                }
             }
         },
         "/groups/{id}": {
@@ -111,7 +150,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.AddMembersPayload"
+                            "$ref": "#/definitions/AddMembersPayload"
                         }
                     }
                 ],
@@ -135,6 +174,40 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "AddMembersPayload": {
+            "type": "object",
+            "required": [
+                "user_ids"
+            ],
+            "properties": {
+                "user_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "CreateGroupPayload": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "members": {
+                    "description": "Optional list of member IDs\nExample: [\"d5075280-2f7c-4967-8526-aaaca282de36\"]",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "Name of the group",
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
         "Group": {
             "type": "object",
             "properties": {
@@ -206,20 +279,6 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
-                }
-            }
-        },
-        "types.AddMembersPayload": {
-            "type": "object",
-            "required": [
-                "user_ids"
-            ],
-            "properties": {
-                "user_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         }

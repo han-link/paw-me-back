@@ -1,4 +1,29 @@
 definitions:
+  AddMembersPayload:
+    properties:
+      user_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - user_ids
+    type: object
+  CreateGroupPayload:
+    properties:
+      members:
+        description: |-
+          Optional list of member IDs
+          Example: ["d5075280-2f7c-4967-8526-aaaca282de36"]
+        items:
+          type: string
+        type: array
+      name:
+        description: Name of the group
+        maxLength: 255
+        type: string
+    required:
+    - name
+    type: object
   Group:
     properties:
       created_at:
@@ -47,15 +72,6 @@ definitions:
       username:
         type: string
     type: object
-  types.AddMembersPayload:
-    properties:
-      user_ids:
-        items:
-          type: string
-        type: array
-    required:
-    - user_ids
-    type: object
 info:
   contact: {}
   title: PawMeBack API
@@ -77,6 +93,32 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Retrieve groups
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Create group
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateGroupPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GroupWithMembers'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Create a new group
       tags:
       - groups
   /groups/{id}:
@@ -123,7 +165,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/types.AddMembersPayload'
+          $ref: '#/definitions/AddMembersPayload'
       produces:
       - application/json
       responses:

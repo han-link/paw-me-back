@@ -49,14 +49,14 @@ func generateGroups(countGroups int, countMembers int, users []model.User) []*mo
 
 		groups[i] = &model.Group{
 			Name:  fmt.Sprintf("group-%02d", i+1),
-			Owner: owner,
+			Owner: &owner,
 		}
 
-		groups[i].Members = append(groups[i].Members, owner)
+		groups[i].Members = append(groups[i].Members, &owner)
 
 		for j := 0; j < countMembers; j++ {
 			member := users[rand.Intn(len(users))]
-			groups[i].Members = append(groups[i].Members, member)
+			groups[i].Members = append(groups[i].Members, &member)
 		}
 	}
 

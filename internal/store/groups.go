@@ -86,13 +86,28 @@ func (s *GroupStore) AddMembers(ctx context.Context, group *model.Group, userIDs
 		return err
 	}
 
-	var freshMembers []model.User
+	var freshMembers []*model.User
 
 	err = s.db.WithContext(ctx).
 		Model(&group).
 		Association("Members").
 		Find(&freshMembers)
 
+	if err != nil {
+		return err
+	}
+
 	group.Members = freshMembers
+	return nil
+}
+
+func (s *GroupStore) Create(ctx context.Context, group *model.Group) error {
+	err := s.db.WithContext(ctx).
+		Session(&gorm.Session{FullSaveAssociations: true}).
+		Create(group).
+		Error
+	if err != nil {
+		return err
+	}
 	return nil
 }

@@ -58,6 +58,7 @@ func (app *application) mount() http.Handler {
 		r.Route("/groups", func(r chi.Router) {
 			r.Use(app.AuthMiddleware)
 			r.Get("/", app.getGroupsHandler)
+			r.Post("/", app.createGroupHandler)
 
 			r.Route("/{groupId}", func(r chi.Router) {
 				r.Use(app.groupsContextMiddleware)

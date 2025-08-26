@@ -22,7 +22,7 @@ func SanitizeSingleGroup(g *model.Group) types.GroupWithMembers {
 
 	members := make([]types.UserBrief, len(g.Members))
 	for i := range g.Members {
-		members[i] = toUserBrief(&g.Members[i])
+		members[i] = toUserBrief(g.Members[i])
 	}
 
 	return types.GroupWithMembers{
@@ -33,7 +33,7 @@ func SanitizeSingleGroup(g *model.Group) types.GroupWithMembers {
 				UpdatedAt: g.UpdatedAt,
 			},
 			Name:  g.Name,
-			Owner: toUserBrief(&g.Owner),
+			Owner: toUserBrief(g.Owner),
 		},
 		Members: members,
 	}
@@ -50,7 +50,7 @@ func SanitizeGroupList(gs []model.Group) []types.Group {
 				UpdatedAt: g.UpdatedAt,
 			},
 			Name:  g.Name,
-			Owner: toUserBrief(&g.Owner),
+			Owner: toUserBrief(g.Owner),
 		}
 	}
 	return out

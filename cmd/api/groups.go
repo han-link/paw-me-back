@@ -112,6 +112,55 @@ func (app *application) addMembersToGroupHandler(w http.ResponseWriter, r *http.
 	}
 }
 
+// Create group
+//
+//	@Summary	Create a new group
+//	@Tags		groups
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		types.CreateGroupPayload	true	"Create group"
+//	@Success	200		{object}	types.GroupWithMembers
+//	@Failure	400		{object}	error
+//	@Failure	404		{object}	error
+//	@Router		/groups [post]
+func (app *application) createGroupHandler(w http.ResponseWriter, r *http.Request) {
+	var payload types.CreateGroupPayload
+	if err := readJSON(w, r, &payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	if err := Validate.Struct(payload); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	user := getUserFromContext(r)
+
+	group := model.Group{
+		Name:    payload.Name,
+		Owner:   user,
+		Members: []*model.User{user},
+	}
+
+	ctx := r.Context()
+
+	if err := app.store.Groups.Create(ctx, &group); err != nil {
+		app.internalServerError(w, r, err)
+	}
+
+	if err := app.store.Groups.AddMembers(ctx, &group, payload.Members); err != nil {
+		app.internalServerError(w, r, err)
+	}
+
+	res := mapper.SanitizeSingleGroup(&group)
+
+	if err := app.jsonResponse(w, http.StatusOK, res); err != nil {
+		app.internalServerError(w, r, err)
+		return
+	}
+}
+
 func getGroupFromContext(r *http.Request) *model.Group {
 	group, _ := r.Context().Value(groupCtx).(*model.Group)
 	return group
