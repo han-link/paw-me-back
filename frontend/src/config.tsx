@@ -7,24 +7,23 @@ import Session from "supertokens-auth-react/recipe/session";
 
 export function getApiDomain() {
     const apiPort = 3000;
-    const apiUrl = `http://localhost:${apiPort}`;
-    return apiUrl;
+    return `http://localhost:${apiPort}`;
 }
 
 export function getWebsiteDomain() {
     const websitePort = 5173;
-    const websiteUrl = `http://localhost:${websitePort}`;
-    return websiteUrl;
+    return `http://localhost:${websitePort}`;
 }
 
 const reUsername = /^[a-z0-9_-]{3,32}$/;
+export const reUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 export const SuperTokensConfig = {
     appInfo: {
         appName: "Paw Me Back",
         apiDomain: getApiDomain(),
         websiteDomain: getWebsiteDomain(),
-        apiBasePath: "/auth",
+        apiBasePath: "/api/auth",
         websiteBasePath: "/auth",
     },
     
@@ -49,23 +48,10 @@ export const SuperTokensConfig = {
     ],
     getRedirectionURL: async (context: any) => {
         if (context.action === "SUCCESS") {
-            return "/dashboard";
+            return "/groups";
         }
         return undefined;
     },
 };
 
-export const recipeDetails = {
-    docsLink: "https://supertokens.com/docs/quickstart/introduction",
-};
-
 export const PreBuiltUIList = [EmailPasswordPreBuiltUI];
-
-
-
-export const ComponentWrapper = (props: { children: JSX.Element }): JSX.Element => {
-    let childrenToRender = props.children;
-
-    
-    return childrenToRender;
-}
