@@ -77,7 +77,7 @@ func main() {
 	storage := store.NewStorage(database)
 
 	stConfig := generateSuperTokenConfig(
-		"/auth",
+		"/api/auth",
 		fmt.Sprintf("http://%s", cfg.apiURL),
 		cfg.frontendURL,
 		storage.Users,

@@ -118,8 +118,8 @@ func (app *application) addMembersToGroupHandler(w http.ResponseWriter, r *http.
 //	@Tags		groups
 //	@Accept		json
 //	@Produce	json
-//	@Param		body	body		types.CreateGroupPayload	true	"Create group"
-//	@Success	200		{object}	types.GroupWithMembers
+//	@Param		body	body	types.CreateGroupPayload	true	"Create group"
+//	@Success	204		"No Content"
 //	@Failure	400		{object}	error
 //	@Failure	404		{object}	error
 //	@Router		/groups [post]
@@ -147,15 +147,17 @@ func (app *application) createGroupHandler(w http.ResponseWriter, r *http.Reques
 
 	if err := app.store.Groups.Create(ctx, &group); err != nil {
 		app.internalServerError(w, r, err)
+		return
 	}
 
-	if err := app.store.Groups.AddMembers(ctx, &group, payload.Members); err != nil {
-		app.internalServerError(w, r, err)
+	if payload.Members != nil {
+		if err := app.store.Groups.AddMembers(ctx, &group, payload.Members); err != nil {
+			app.internalServerError(w, r, err)
+			return
+		}
 	}
 
-	res := mapper.SanitizeSingleGroup(&group)
-
-	if err := app.jsonResponse(w, http.StatusOK, res); err != nil {
+	if err := app.jsonResponse(w, http.StatusNoContent, nil); err != nil {
 		app.internalServerError(w, r, err)
 		return
 	}

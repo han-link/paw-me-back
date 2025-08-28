@@ -5,6 +5,7 @@ import (
 	"paw-me-back/internal/docs"
 	"paw-me-back/internal/env"
 	"paw-me-back/internal/store"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -32,7 +33,7 @@ func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 
 	corsOptions := cors.Options{
-		AllowedOrigins:   []string{env.GetString("CORS_ALLOWED_ORIGIN", "http://localhost:5173")},
+		AllowedOrigins:   strings.Split(env.GetString("CORS_ALLOWED_ORIGIN", ""), ","),
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   append([]string{"Content-Type"}, supertokens.GetAllCORSHeaders()...),
 		ExposedHeaders:   []string{"Link"},

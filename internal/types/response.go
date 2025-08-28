@@ -34,4 +34,8 @@ type GroupWithMembers struct {
 	Members []UserBrief `json:"members"`
 } // @name GroupWithMembers
 
+type Empty struct{}
+
+type NoContent = Response[Empty] // @name NoContent
+
 type GroupListResponse = Response[[]Group] // @name GroupListResponse
